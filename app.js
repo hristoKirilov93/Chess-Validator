@@ -1,19 +1,20 @@
-var board = null
-var game = new Chess()
-var $status = $('#status')
+var board = null;
+var game = new Chess();
+var $status = $('#status');
+var $valid = $('#valid');
 
-function onDragStart (source, piece, position, orientation) {
+function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
 
   // only pick up pieces for the side to move
   if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
     return false
   }
 }
 
-function onDrop (source, target) {
+function onDrop(source, target) {
   // see if the move is legal
   var move = game.move({
     from: source,
@@ -22,18 +23,22 @@ function onDrop (source, target) {
   })
 
   // illegal move
-  if (move === null) return 'snapback'
-
+  if (move === null) {
+    $valid.html('Wrong move: ' + source + '-' + target + '!');
+    return 'snapback'
+  } else {
+    $valid.html('Move is valid!');
+  }
   updateStatus()
 }
 
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
-function onSnapEnd () {
+function onSnapEnd() {
   board.position(game.fen())
 }
 
-function updateStatus () {
+function updateStatus() {
   var status = ''
 
   var moveColor = 'White'
@@ -66,10 +71,11 @@ function updateStatus () {
 var config = {
   draggable: true,
   position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd
+  onDragStart,
+  onDrop,
+  onSnapEnd
 }
+
 board = Chessboard('myBoard', config)
 
 updateStatus();
