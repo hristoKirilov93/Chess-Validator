@@ -28,6 +28,9 @@ function onDrop(source, target) {
     return 'snapback'
   } else {
     $valid.html('Move is valid!');
+    setTimeout(() => {
+      $valid.html('');
+    }, 1000);
   }
   updateStatus()
 }
